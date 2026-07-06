@@ -5,6 +5,7 @@ using OrdersAPI.Middleware;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDataAccessLayer();
+
 builder.Services.AddBusinessLogicLayer();
 builder.Services.AddControllers();
 var app = builder.Build();
