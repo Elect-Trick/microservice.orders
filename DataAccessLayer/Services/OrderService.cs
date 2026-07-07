@@ -18,4 +18,21 @@ public class OrderService : IOrderService
        
        return newOrder;
     }
+
+    public async Task<Order?> GetOrderById(Guid id)
+    {
+        Order? order = await _orderRepository.GetOrderById(id);
+        return order;
+    }
+
+    public async Task<List<Order>> GetOrders()
+    {
+        List<Order> orders = await _orderRepository.GetOrders();
+        return orders;
+    }
+
+    public async Task<bool> DeleteOrder(Guid id)
+    {
+        return await _orderRepository.DeleteOrder(id);
+    }
 }
