@@ -11,6 +11,9 @@ public class OrderItem
     
     [BsonRepresentation(BsonType.String)]
     public Guid ProductId { get; set; }
+
+    [BsonRepresentation(BsonType.String)]
+    public string? ProductName{ get; set; }
     
     [BsonRepresentation(BsonType.Decimal128)]
     public decimal UnitPrice { get; set; }

@@ -9,6 +9,7 @@ public class Order
     [BsonRepresentation(BsonType.String)]
     public Guid Id { get; set; }
     
+    [BsonRepresentation(BsonType.String)]
     public Guid UserId { get; set; }
     
     [BsonRepresentation(BsonType.String)]
