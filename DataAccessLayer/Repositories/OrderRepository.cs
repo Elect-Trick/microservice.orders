@@ -1,6 +1,7 @@
 using BusinessLogicLayer.Entities;
 using BusinessLogicLayer.RepositoryContracts;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace DataAccessLayer.Repositories;
 
@@ -33,5 +34,23 @@ public class OrderRepository : IOrderRepository
         };
         await _orders.InsertOneAsync(newOrder);
         return newOrder;
+    }
+
+    public async Task<Order?> GetOrderById(Guid id)
+    {
+        Order? order = await _orders.Find(o => o.Id.Equals(id)).FirstOrDefaultAsync();
+        return order;
+    }
+
+    public async Task<List<Order>> GetOrders()
+    {
+        List<Order> orders = await _orders.AsQueryable().ToListAsync();
+        return orders;
+    }
+
+    public async Task<bool> DeleteOrder(Guid id)
+    {
+        var result =  await _orders.DeleteOneAsync(o => o.Id.Equals(id));
+        return result.DeletedCount > 0;
     }
 }
