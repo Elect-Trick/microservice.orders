@@ -1,5 +1,6 @@
 using BusinessLogicLayer.RepositoryContracts;
 using BusinessLogicLayer.ServiceContracts;
+using DataAccessLayer.Mappers;
 using DataAccessLayer.Repositories;
 using DataAccessLayer.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +16,10 @@ public static class DataAccessLayer
 
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddAutoMapper(cfg =>
+        {
+            cfg.AddMaps(typeof(MappingProfiles));
+        });
         return services;
     }
 }
