@@ -5,9 +5,15 @@ namespace BusinessLogicLayer.Entities;
 
 public class OrderItem
 {
+
+    public OrderItem()
+    {
+        //We need to create a new id for each order item since this is a nested document(object).
+        Id = Guid.NewGuid();
+    }
     [BsonId]
     [BsonRepresentation(BsonType.String)]
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     
     [BsonRepresentation(BsonType.String)]
     public Guid ProductId { get; set; }

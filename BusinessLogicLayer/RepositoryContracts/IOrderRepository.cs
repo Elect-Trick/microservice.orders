@@ -1,4 +1,5 @@
 using BusinessLogicLayer.Entities;
+using DataAccessLayer.DTOs;
 
 namespace BusinessLogicLayer.RepositoryContracts;
 

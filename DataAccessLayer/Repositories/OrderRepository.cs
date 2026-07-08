@@ -14,26 +14,8 @@ public class OrderRepository : IOrderRepository
     }
     public async Task<Order?> CreateOrder(Order order)
     {
-        Order newOrder = new Order()
-        {
-            Id = Guid.NewGuid(),
-            UserId = Guid.NewGuid(), 
-            OrderDate = DateTime.UtcNow,
-            TotalBill = 159.99m,
-            OrderItems = new List<OrderItem>
-            {
-                new OrderItem
-                {
-                    ProductId = Guid.NewGuid(),
-                    ProductName = "Laptop",
-                    Quantity = 1,
-                    UnitPrice = 999.99m
-                }
-            }
-            
-        };
-        await _orders.InsertOneAsync(newOrder);
-        return newOrder;
+        await _orders.InsertOneAsync(order);
+        return order;
     }
 
     public async Task<Order?> GetOrderById(Guid id)
