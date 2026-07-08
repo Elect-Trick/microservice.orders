@@ -1,5 +1,6 @@
 using BusinessLogicLayer.Entities;
 using BusinessLogicLayer.ServiceContracts;
+using DataAccessLayer.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace OrdersAPI.Controllers;
@@ -15,7 +16,7 @@ public class OrdersController: ControllerBase
     }
 
     [HttpPost]
-    public async Task<Order?> CreateOrder(Order order)
+    public async Task<Order?> CreateOrder(OrderDto order)
     {
         return await _orderService.CreateOrder(order);
     }
