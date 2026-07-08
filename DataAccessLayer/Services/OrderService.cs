@@ -1,6 +1,8 @@
+using AutoMapper;
 using BusinessLogicLayer.Entities;
 using BusinessLogicLayer.RepositoryContracts;
 using BusinessLogicLayer.ServiceContracts;
+using DataAccessLayer.DTOs;
 
 namespace DataAccessLayer.Services;
 
@@ -8,13 +10,16 @@ public class OrderService : IOrderService
 {
 
     private readonly IOrderRepository _orderRepository;
-    public OrderService(IOrderRepository orderRepository)
+    private readonly IMapper _mapper;
+    public OrderService(IOrderRepository orderRepository, IMapper mapper)
     {
         _orderRepository = orderRepository;
+        _mapper = mapper;
     }
-    public async Task<Order?> CreateOrder(Order order)
+    public async Task<Order?> CreateOrder(OrderDto order)
     {
-       Order? newOrder =  await _orderRepository.CreateOrder(order);
+        Order orderEntity = _mapper.Map<Order>(order);
+        Order? newOrder =  await _orderRepository.CreateOrder(orderEntity);
        
        return newOrder;
     }
