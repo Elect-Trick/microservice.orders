@@ -12,7 +12,7 @@ public class Order
     [BsonRepresentation(BsonType.String)]
     public Guid UserId { get; set; }
     
-    [BsonRepresentation(BsonType.String)]
+    [BsonRepresentation(BsonType.DateTime)]
     public DateTime OrderDate { get; set; }
     
     [BsonRepresentation(BsonType.Decimal128)]
