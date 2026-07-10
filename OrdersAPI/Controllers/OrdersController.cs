@@ -1,6 +1,7 @@
 using BusinessLogicLayer.Entities;
 using BusinessLogicLayer.ServiceContracts;
 using DataAccessLayer.DTOs;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace OrdersAPI.Controllers;
@@ -10,47 +11,74 @@ public class OrdersController: ControllerBase
 {
     
    private readonly IOrderService _orderService;
-    public OrdersController(IOrderService orderService)
+   private readonly IValidator<OrderDto> _orderValidator;
+    public OrdersController(IOrderService orderService, IValidator<OrderDto> orderValidator)
     {
         _orderService = orderService;
+        _orderValidator = orderValidator;
     }
 
     [HttpPost]
-    public async Task<Order?> CreateOrder(OrderDto order)
+    public async Task<ActionResult<Order?>> CreateOrder(OrderDto order)
     {
-        return await _orderService.CreateOrder(order);
+        var validationResults = await _orderValidator.ValidateAsync(order);
+       if (!validationResults.IsValid)
+       {
+           return BadRequest(new
+           {
+               Title = "Bad Request",
+               Code = 500,
+               Errors = validationResults.Errors.Select(error => error.ErrorMessage).ToList()
+           });
+       }
+        Order? newOrder  = await _orderService.CreateOrder(order);
+        return newOrder;
     }
 
     [HttpGet("search/{id}")]
-    public async Task<Order?> GetOrder(Guid id)
+    public async Task<ActionResult<Order?>> GetOrder(Guid id)
     {
-        return await _orderService.GetOrderById(id);
+        Order? order =  await _orderService.GetOrderById(id);
+        if (order == null)
+        {
+            return NotFound($"No order found with id {id}");
+        }
+
+        return Ok(order);
     }
     
     [HttpGet("productId/{id}")]
     public async Task<List<Order>> GetOrdersByProductId(Guid id)
     {
+        //Probably need to search by UserId as well.
+        //Perhaps also check if the product is valid(but hold on, wont this happen in the product microservice?) and in stock?
         List<Order> orders = await _orderService.GetOrders();
         return orders.Where(o => o.OrderItems.Any(i => i.ProductId.Equals(id))).ToList();
     }
     
     [HttpGet]
-    public async Task<List<Order>> GetOrders()
+    public async Task<ActionResult<List<Order>>> GetOrders()
     {
         List<Order> orders = await _orderService.GetOrders();
-        return orders;
+        return Ok(orders);
     }
 
     [HttpDelete("{id}")]
-    public async Task<bool> DeleteOrder(Guid id)
+    public async Task<ActionResult<bool>> DeleteOrder(Guid id)
     {
        Order? order = await _orderService.GetOrderById(id);
         if (order == null)
         {
-            return false;
+            return NotFound($"No order found with id {id}");
         }
-        await _orderService.DeleteOrder(id);
-        return true;
+        
+       bool result = await _orderService.DeleteOrder(id);
+       if (!result)
+       {
+           return BadRequest($"Failed to delete order with id {id}");
+       }
+       
+        return Ok(result);
         
     }
     
