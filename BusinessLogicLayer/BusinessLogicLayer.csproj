@@ -7,9 +7,16 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="11.0.0-preview.5.26302.115" />
       <PackageReference Include="MongoDB.Bson" Version="3.9.0" />
       <PackageReference Include="MongoDB.Driver" Version="3.9.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="FluentValidation">
+        <HintPath>..\..\..\..\..\..\..\.nuget\packages\fluentvalidation\12.1.1\lib\net8.0\FluentValidation.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>
