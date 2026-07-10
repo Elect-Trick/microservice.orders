@@ -19,6 +19,7 @@ public class OrderService : IOrderService
     public async Task<Order?> CreateOrder(OrderDto order)
     {
         Order orderEntity = _mapper.Map<Order>(order);
+        orderEntity.OrderDate = DateTime.UtcNow;
         Order? newOrder =  await _orderRepository.CreateOrder(orderEntity);
        
        return newOrder;
