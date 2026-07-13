@@ -24,7 +24,7 @@ public class OrderRepository : IOrderRepository
         return order;
     }
 
-    public async Task<List<Order>> GetOrders()
+    public async Task<IEnumerable<Order>> GetOrders()
     {
         List<Order> orders = await _orders.AsQueryable().ToListAsync();
         return orders;

@@ -6,6 +6,6 @@ public interface IOrderService
 {
     public Task<Order?> CreateOrder(OrderDto order);
     Task<Order?> GetOrderById(Guid id);
-    Task<List<Order>> GetOrders();
+    Task<IEnumerable<Order>> GetOrders();
     Task<bool> DeleteOrder(Guid id);
 }           

@@ -31,9 +31,9 @@ public class OrderService : IOrderService
         return order;
     }
 
-    public async Task<List<Order>> GetOrders()
+    public async Task<IEnumerable<Order>> GetOrders()
     {
-        List<Order> orders = await _orderRepository.GetOrders();
+        IEnumerable<Order> orders = await _orderRepository.GetOrders();
         return orders;
     }
 

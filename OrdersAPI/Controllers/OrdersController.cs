@@ -52,14 +52,14 @@ public class OrdersController: ControllerBase
     {
         //Probably need to search by UserId as well.
         //Perhaps also check if the product is valid(but hold on, wont this happen in the product microservice?) and in stock?
-        List<Order> orders = await _orderService.GetOrders();
+        IEnumerable<Order> orders = await _orderService.GetOrders();
         return orders.Where(o => o.OrderItems.Any(i => i.ProductId.Equals(id))).ToList();
     }
     
     [HttpGet]
     public async Task<ActionResult<List<Order>>> GetOrders()
     {
-        List<Order> orders = await _orderService.GetOrders();
+        IEnumerable<Order> orders = await _orderService.GetOrders();
         return Ok(orders);
     }
 
