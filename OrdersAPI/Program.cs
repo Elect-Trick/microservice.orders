@@ -14,6 +14,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<OrderValidator>();
 var app = builder.Build();
 
 app.UseExceptionHandlingMiddleware();
+app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
