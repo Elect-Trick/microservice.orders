@@ -35,7 +35,11 @@ public class OrdersController: ControllerBase
            });
        }
         Order? newOrder  = await _orderService.CreateOrder(order);
-        return newOrder;
+        if (newOrder == null)
+        {
+            return StatusCode(500, "Failed to create order");
+        }
+        return Ok(newOrder);
     }
 
     [HttpGet("search/{id}")]
