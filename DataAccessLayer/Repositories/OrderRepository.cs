@@ -35,4 +35,24 @@ public class OrderRepository : IOrderRepository
         var result =  await _orders.DeleteOneAsync(o => o.Id.Equals(id));
         return result.DeletedCount > 0;
     }
+
+    public async Task<bool> UpdateOrder(Order order)
+    {
+        foreach (var item in order.OrderItems)
+        {
+            item.TotalPrice = item.UnitPrice * item.Quantity;
+        }
+        
+        order.TotalBill = order.OrderItems.Sum(o => o.TotalPrice);
+        order.OrderDate = DateTime.UtcNow;
+        FilterDefinition<Order> filter = Builders<Order>.Filter.Eq(x => x.Id, order.Id);
+        var result = await _orders.ReplaceOneAsync(filter, order);
+        
+        return result.MatchedCount > 0;
+    }
+
+    public async Task<IEnumerable<Order>> GetOrdersByCondition(FilterDefinition<Order> filter)
+    {
+        return await (_orders.FindAsync(filter).Result).ToListAsync();
+    }
 }

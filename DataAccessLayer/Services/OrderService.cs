@@ -3,6 +3,7 @@ using BusinessLogicLayer.Entities;
 using BusinessLogicLayer.RepositoryContracts;
 using BusinessLogicLayer.ServiceContracts;
 using DataAccessLayer.DTOs;
+using MongoDB.Driver;
 
 namespace DataAccessLayer.Services;
 
@@ -33,6 +34,7 @@ public class OrderService : IOrderService
 
     public async Task<IEnumerable<Order>> GetOrders()
     {
+        
         IEnumerable<Order> orders = await _orderRepository.GetOrders();
         return orders;
     }
@@ -40,5 +42,16 @@ public class OrderService : IOrderService
     public async Task<bool> DeleteOrder(Guid id)
     {
         return await _orderRepository.DeleteOrder(id);
+    }
+
+    public async Task<bool> UpdateOrder(Order order)
+    {
+        // Order orderEntity = _mapper.Map<Order>(order);
+        return await _orderRepository.UpdateOrder(order);
+    }
+
+    public async Task<IEnumerable<Order>> GetOrdersByCondition(FilterDefinition<Order> filter)
+    {
+        return await _orderRepository.GetOrdersByCondition(filter);
     }
 }
