@@ -4,7 +4,7 @@ public record OrderItemDto
 {
     public int Id { get; init; }
     
-    public Guid ProductId { get; init; }
+    public int ProductId { get; init; }
     
     public decimal UnitPrice { get; init; }
     
