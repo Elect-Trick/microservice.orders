@@ -11,9 +11,16 @@ builder.Services.AddDataAccessLayer();
 builder.Services.AddBusinessLogicLayer();
 builder.Services.AddControllers();
 builder.Services.AddValidatorsFromAssemblyContaining<OrderValidator>();
+builder.Services.AddCors();
 var app = builder.Build();
 
 app.UseExceptionHandlingMiddleware();
+app.UseCors(config =>
+{
+    config.WithOrigins("http://localhost:42000")
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+});
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
