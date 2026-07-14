@@ -14,6 +14,12 @@ public class OrderRepository : IOrderRepository
     }
     public async Task<Order?> CreateOrder(Order order)
     {
+        foreach (var item in order.OrderItems)
+        {
+            item.TotalPrice = item.UnitPrice * item.Quantity;
+        }
+        order.TotalBill = order.OrderItems.Sum(o => o.TotalPrice);
+
         await _orders.InsertOneAsync(order);
         return order;
     }
