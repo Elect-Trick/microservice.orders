@@ -3,6 +3,7 @@ using BusinessLogicLayer.ServiceContracts;
 using DataAccessLayer.DTOs;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
 
 namespace OrdersAPI.Controllers;
 [ApiController]
@@ -12,15 +13,17 @@ public class OrdersController: ControllerBase
     
    private readonly IOrderService _orderService;
    private readonly IValidator<OrderDto> _orderValidator;
-    public OrdersController(IOrderService orderService, IValidator<OrderDto> orderValidator)
+   private readonly IValidator<Order> _orderUpdateValidator;
+    public OrdersController(IOrderService orderService, IValidator<OrderDto> orderValidator, IValidator<Order> orderUpdateValidator)
     {
         _orderService = orderService;
         _orderValidator = orderValidator;
+        _orderUpdateValidator = orderUpdateValidator;
     }
 
     [HttpPost]
     public async Task<ActionResult<Order?>> CreateOrder(OrderDto order)
-    {
+    { 
         var validationResults = await _orderValidator.ValidateAsync(order);
        if (!validationResults.IsValid)
        {
@@ -80,6 +83,54 @@ public class OrdersController: ControllerBase
        
         return Ok(result);
         
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<Order>> UpdateOrder(Guid id, Order order)
+    {
+        var validationResults = await _orderUpdateValidator.ValidateAsync(order);
+        if (!validationResults.IsValid)
+        {
+            return BadRequest(new
+            {
+                Title = "Bad Request",
+                Code = 500,
+                Errors = validationResults.Errors.Select(error => error.ErrorMessage).ToList()
+            });
+        }
+
+        if (id != order.Id)
+        {
+            return BadRequest($"Order with id {id} does not exist");
+        }
+        Order? existingOrder = await _orderService.GetOrderById(id);
+        if (existingOrder == null)
+        {
+            return NotFound($"No order found with id {id}");
+        }
+        
+            try
+            {
+                bool updated = await _orderService.UpdateOrder(order);
+                if (!updated)
+                {
+                    return StatusCode(500, "Failed to update order");
+                }
+                return Ok(order);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, $"An error occurred while updating the order: {e.Message}");            }
+      
+        
+    }
+
+    [HttpGet("userId/{userId}")]
+    public async Task<ActionResult<List<Order>>> GetOrdersByUserId(Guid userId)
+    {
+       FilterDefinition<Order> filter = Builders<Order>.Filter.Eq(o => o.UserId, userId);
+       IEnumerable<Order> orders = await _orderService.GetOrdersByCondition(filter);
+        return Ok(orders);
     }
     
     

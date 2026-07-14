@@ -4,8 +4,6 @@ namespace DataAccessLayer.DTOs;
 
 public record OrderDto
 {
-    
-  
     public Guid Id { get; init; }
     
     public Guid UserId { get; init; }
