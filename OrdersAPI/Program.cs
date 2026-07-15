@@ -1,4 +1,5 @@
 using BusinessLogicLayer.DependencyInjection;
+using BusinessLogicLayer.HttpClient;
 using DataAccessLayer.DependencyInjection;
 using OrdersAPI.Middleware;
 using FluentValidation;
@@ -7,7 +8,10 @@ using BusinessLogicLayer.Validators;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDataAccessLayer();
-
+builder.Services.AddHttpClient<UserMicroServiceClient>(client =>
+{
+    client.BaseAddress = new Uri($"http://{Environment.GetEnvironmentVariable("UserMSName")}:{Environment.GetEnvironmentVariable("UserMSPort")}/");
+});
 builder.Services.AddBusinessLogicLayer();
 builder.Services.AddControllers();
 builder.Services.AddValidatorsFromAssemblyContaining<OrderValidator>();
