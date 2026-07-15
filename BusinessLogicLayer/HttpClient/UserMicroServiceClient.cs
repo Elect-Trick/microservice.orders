@@ -21,16 +21,12 @@ public class UserMicroServiceClient
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 return null;
-
-            }else if (response.StatusCode == HttpStatusCode.BadRequest)
+            }
+            if (response.StatusCode == HttpStatusCode.BadRequest)
             {
                 throw new HttpRequestException("Bad Request, Id not found", null,HttpStatusCode.BadRequest);
             }
-            else
-            {
-                throw new HttpRequestException("Internal Server Error", null, response.StatusCode);
-            }
-            
+            throw new HttpRequestException("Internal Server Error", null, response.StatusCode);
         }
 
         UserDTO? user = await response.Content.ReadFromJsonAsync<UserDTO>();
