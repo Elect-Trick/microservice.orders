@@ -7,7 +7,11 @@
       "launchBrowser": true,
       "applicationUrl": "http://localhost:5285",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "MONGO_DB_HOST" : "localhost",
+        "MONGO_DB_PORT": "27017",
+        "UserMSName" : "localhost",
+        "UserMSPort": "5000"
       }
     },
     "https": {
@@ -16,7 +20,11 @@
       "launchBrowser": true,
       "applicationUrl": "https://localhost:7286;http://localhost:5285",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "MONGO_DB_HOST" : "localhost",
+        "MONGO_DB_PORT": "27017",
+        "UserMSName" : "localhost",
+        "UserMSPort": "5000"
       }
     }
   }
