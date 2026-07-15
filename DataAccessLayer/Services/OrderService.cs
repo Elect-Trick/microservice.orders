@@ -1,5 +1,6 @@
 using AutoMapper;
 using BusinessLogicLayer.Entities;
+using BusinessLogicLayer.HttpClient;
 using BusinessLogicLayer.RepositoryContracts;
 using BusinessLogicLayer.ServiceContracts;
 using DataAccessLayer.DTOs;
@@ -12,13 +13,22 @@ public class OrderService : IOrderService
 
     private readonly IOrderRepository _orderRepository;
     private readonly IMapper _mapper;
-    public OrderService(IOrderRepository orderRepository, IMapper mapper)
+    private readonly UserMicroServiceClient _userMicroServiceClient;
+    public OrderService(IOrderRepository orderRepository, IMapper mapper, UserMicroServiceClient userMicroServiceClient)
     {
         _orderRepository = orderRepository;
         _mapper = mapper;
+        _userMicroServiceClient = userMicroServiceClient;
     }
     public async Task<Order?> CreateOrder(OrderDto order)
     {
+        
+       UserDTO? user = await  _userMicroServiceClient.GetUserByUserID(order.UserId);
+       if (user == null)
+       {
+           throw new ArgumentNullException("Invalid user ID");
+       }
+       
         Order orderEntity = _mapper.Map<Order>(order);
         orderEntity.OrderDate = DateTime.UtcNow;
         Order? newOrder =  await _orderRepository.CreateOrder(orderEntity);
@@ -46,7 +56,11 @@ public class OrderService : IOrderService
 
     public async Task<bool> UpdateOrder(Order order)
     {
-        // Order orderEntity = _mapper.Map<Order>(order);
+        UserDTO? user = await  _userMicroServiceClient.GetUserByUserID(order.UserId);
+        if (user == null)
+        {
+            throw new ArgumentNullException("Invalid user ID");
+        }
         return await _orderRepository.UpdateOrder(order);
     }
 
