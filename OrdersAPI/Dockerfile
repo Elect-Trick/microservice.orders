@@ -22,7 +22,7 @@ RUN dotnet publish "./OrdersAPI.csproj" -c $BUILD_CONFIGURATION -o /app/publish 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENV MONGO_DB_HOST=localhost
+ENV MONGO_DB_HOST=mongoDB
 ENV MONGO_DB_PORT=27017
 ENV UserMSName=localhost
 ENV UserMSPort=5000

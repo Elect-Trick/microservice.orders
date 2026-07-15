@@ -25,7 +25,7 @@ app.UseCors(config =>
         .AllowAnyHeader()
         .AllowAnyMethod();
 });
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();

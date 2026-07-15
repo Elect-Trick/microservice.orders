@@ -11,7 +11,12 @@ public static class DataAccessLayer
 {
     public static IServiceCollection AddDataAccessLayer(this IServiceCollection services)
     {
-        services.AddSingleton(new MongoDbContext.MongoDbContext(connectionString: "mongodb://localhost:27017",
+        
+        var host = Environment.GetEnvironmentVariable("MONGO_DB_HOST") ?? "localhost";
+        var port = Environment.GetEnvironmentVariable("MONGO_DB_PORT") ?? "27017";
+        var connectionString = $"mongodb://{host}:{port}";
+        var databaseName = Environment.GetEnvironmentVariable("MONGO_DB_NAME") ?? "OrdersDB";
+        services.AddSingleton(new MongoDbContext.MongoDbContext(connectionString: connectionString,
             databaseName: "OrdersDB"));
 
         services.AddScoped<IOrderService, OrderService>();
