@@ -1,4 +1,4 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 USER $APP_UID
 WORKDIR /app
 EXPOSE 6000
@@ -26,6 +26,4 @@ ENV MONGO_DB_HOST=mongoDB
 ENV MONGO_DB_PORT=27017
 ENV UserMSName=localhost
 ENV UserMSPort=5000
-ENV ProductsMSName=localhost
-ENV ProductsMSPort=8080
 ENTRYPOINT ["dotnet", "OrdersAPI.dll"]
