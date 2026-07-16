@@ -24,16 +24,6 @@ public class OrdersController: ControllerBase
     [HttpPost]
     public async Task<ActionResult<Order?>> CreateOrder(OrderDto order)
     { 
-        var validationResults = await _orderValidator.ValidateAsync(order);
-       if (!validationResults.IsValid)
-       {
-           return BadRequest(new
-           {
-               Title = "Bad Request",
-               Code = 500,
-               Errors = validationResults.Errors.Select(error => error.ErrorMessage).ToList()
-           });
-       }
         Order? newOrder  = await _orderService.CreateOrder(order);
         if (newOrder == null)
         {
@@ -55,7 +45,7 @@ public class OrdersController: ControllerBase
     }
     
     [HttpGet("productId/{id}")]
-    public async Task<List<Order>> GetOrdersByProductId(Guid id)
+    public async Task<List<Order>> GetOrdersByProductId(int id)
     {
         //Probably need to search by UserId as well.
         //Perhaps also check if the product is valid(but hold on, wont this happen in the product microservice?) and in stock?

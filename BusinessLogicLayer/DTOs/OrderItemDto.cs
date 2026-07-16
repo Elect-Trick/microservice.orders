@@ -6,7 +6,7 @@ public record OrderItemDto
     
     public int ProductId { get; init; }
     
-    public decimal UnitPrice { get; init; }
+    public decimal? UnitPrice { get; init; }
     
     public int Quantity { get; init; }
     

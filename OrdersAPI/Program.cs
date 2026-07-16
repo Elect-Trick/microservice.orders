@@ -12,6 +12,13 @@ builder.Services.AddHttpClient<UserMicroServiceClient>(client =>
 {
     client.BaseAddress = new Uri($"http://{Environment.GetEnvironmentVariable("UserMSName")}:{Environment.GetEnvironmentVariable("UserMSPort")}/");
 });
+
+builder.Services.AddHttpClient<ProductMicroServiceClient>(client =>
+{
+    client.BaseAddress = new Uri($"http://{Environment.GetEnvironmentVariable("ProductsMSName")}:{Environment.GetEnvironmentVariable("ProductsMSPort")}/");
+});
+
+
 builder.Services.AddBusinessLogicLayer();
 builder.Services.AddControllers();
 builder.Services.AddValidatorsFromAssemblyContaining<OrderValidator>();
