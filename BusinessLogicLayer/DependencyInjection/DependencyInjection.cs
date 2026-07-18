@@ -1,4 +1,6 @@
 
+using BusinessLogicLayer.Policies;
+using BusinessLogicLayer.PollyContracts;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using BusinessLogicLayer.Validators;
@@ -12,6 +14,7 @@ public static class DependencyInjection
     {
 
         services.AddScoped<IValidator, OrderValidator>();
+        services.AddScoped<IUserMicroServicePolicies, UserMircoservicePollyPolicies>();
         return services;
     }
 }
