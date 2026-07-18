@@ -22,20 +22,24 @@ builder.Services.AddHttpClient<ProductMicroServiceClient>(client =>
 builder.Services.AddBusinessLogicLayer();
 builder.Services.AddControllers();
 builder.Services.AddValidatorsFromAssemblyContaining<OrderValidator>();
-builder.Services.AddCors();
-var app = builder.Build();
-
-app.UseExceptionHandlingMiddleware();
-app.UseCors(config =>
+builder.Services.AddCors(options =>
 {
-    config.WithOrigins("http://localhost:42000")
-        .AllowAnyHeader()
-        .AllowAnyMethod();
+    options.AddPolicy("OrdersCorsPolicy",builder =>
+    {
+        builder.WithOrigins("http://localhost:4200")
+            .AllowAnyMethod()
+            .AllowAnyHeader().AllowCredentials() ;
+    });
 });
-// app.UseHttpsRedirection();
+
+var app = builder.Build();
+app.UseExceptionHandlingMiddleware();
 app.UseRouting();
+app.UseCors("OrdersCorsPolicy");
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
 
 app.Run();
