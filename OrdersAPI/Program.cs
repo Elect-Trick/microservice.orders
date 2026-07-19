@@ -13,10 +13,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDataAccessLayer();
 builder.Services.AddHttpClient<UserMicroServiceClient>(client =>
 {
-    client.BaseAddress = new Uri($"http://{Environment.GetEnvironmentVariable("UserMSName")}:{Environment.GetEnvironmentVariable("UserMSPort")}/");
+    client.BaseAddress =
+        new Uri(
+            $"http://{Environment.GetEnvironmentVariable("UserMSName")}:{Environment.GetEnvironmentVariable("UserMSPort")}/");
 }).AddPolicyHandler((serviceProvicer, request) =>
 {
-    return serviceProvicer.GetRequiredService<IUserMicroServicePolicies>().GetRetryPolicy();
+    return serviceProvicer.GetRequiredService<IUserMicroServicePolicies>().GetAllPolcies();
 });
 
 builder.Services.AddHttpClient<ProductMicroServiceClient>(client =>
