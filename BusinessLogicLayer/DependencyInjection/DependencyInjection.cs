@@ -14,7 +14,7 @@ public static class DependencyInjection
     {
 
         services.AddScoped<IValidator, OrderValidator>();
-        services.AddScoped<IUserMicroServicePolicies, UserMircoservicePollyPolicies>();
+        services.AddSingleton<IUserMicroServicePolicies, UserMircoservicePollyPolicies>();
         return services;
     }
 }
