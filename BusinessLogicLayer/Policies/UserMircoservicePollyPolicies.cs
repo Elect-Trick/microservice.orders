@@ -1,23 +1,30 @@
+using System.Net;
 using BusinessLogicLayer.PollyContracts;
 using Polly;
 using Polly.Retry;
 using Microsoft.Extensions.Logging;
+using Polly.CircuitBreaker;
 
 namespace BusinessLogicLayer.Policies;
 
 public class UserMircoservicePollyPolicies : IUserMicroServicePolicies
 {
     private readonly ILogger<UserMircoservicePollyPolicies> _logger;
+    private readonly IAsyncPolicy<HttpResponseMessage> _combinedPolicy;
 
     public UserMircoservicePollyPolicies(ILogger<UserMircoservicePollyPolicies> logger)
     {
         _logger = logger;
+           _combinedPolicy = Policy.WrapAsync(
+            GetCircuitBreakerPolicy(),
+            GetRetryPolicy()
+        );
     }
     public IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
     {
         AsyncRetryPolicy<HttpResponseMessage> policy =  Policy.HandleResult<HttpResponseMessage>(response => !response.IsSuccessStatusCode
-        ).WaitAndRetryAsync(retryCount: 3,
-            sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+        ).WaitAndRetryAsync(retryCount: 2,
+            sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(2),
             onRetry:
             (exception, timeSpan, retryCount, context) =>
             {
@@ -25,6 +32,32 @@ public class UserMircoservicePollyPolicies : IUserMicroServicePolicies
             });
         return policy;
     }
+
+    public IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
+    {
+         AsyncCircuitBreakerPolicy<HttpResponseMessage> policy = Policy.HandleResult<HttpResponseMessage>(response => !response.IsSuccessStatusCode
+        ).CircuitBreakerAsync(handledEventsAllowedBeforeBreaking: 1,
+                                durationOfBreak:  TimeSpan.FromMinutes(1),
+                                onBreak:
+            (outcome, timeSpan) =>
+            {
+                _logger.LogInformation($"Circuit Breaker tripped for   {timeSpan.TotalMinutes} minutes due to consecutive failures. Subsequest requests will be rejected");
+            },
+            
+            onReset: () =>
+            {
+                _logger.LogInformation("Circuit Breaker reset, allowing requests to continue");
+                                    
+            },
+                                onHalfOpen: () =>
+                                {
+                                    _logger.LogInformation("Circuit Breaker half open, testing the service again");
+                                });
+         
+         return policy;
+    }
+
+
 
     public string PolicyKey { get; }
     public IAsyncPolicy<HttpResponseMessage> WithPolicyKey(string policyKey)
@@ -123,5 +156,14 @@ public class UserMircoservicePollyPolicies : IUserMicroServicePolicies
         bool continueOnCapturedContext)
     {
         throw new NotImplementedException();
+    }
+    
+    
+    public IAsyncPolicy<HttpResponseMessage> GetAllPolcies()
+    {
+        // Circuit breaker OUTSIDE, retry INSIDE
+        return _combinedPolicy;
+
+
     }
 }

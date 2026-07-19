@@ -15,6 +15,12 @@ public class UserMicroServiceClient
 
     public async Task<UserDTO?> GetUserByUserID(Guid id)
     {
+        //Depending on where the polly policy takes us, we can return some fall back data like 
+        /*
+         * return new UserDTO() { Id = Not aavailable at the moment, Name = "Not available at the moment, please try again after 5 min" };
+         * Or just return detailed info to the user.
+         */
+        
         HttpResponseMessage response = await _httpClient.GetAsync($"api/user/{id}");
         if (!response.IsSuccessStatusCode)
         {
@@ -26,6 +32,8 @@ public class UserMicroServiceClient
             {
                 throw new HttpRequestException("Bad Request, Id not found", null,HttpStatusCode.BadRequest);
             }
+            
+            
             throw new HttpRequestException("Internal Server Error", null, response.StatusCode);
         }
 
