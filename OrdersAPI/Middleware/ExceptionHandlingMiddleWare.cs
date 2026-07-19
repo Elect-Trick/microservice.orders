@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using Polly.CircuitBreaker;
 
 namespace OrdersAPI.Middleware
 {
@@ -26,6 +27,14 @@ namespace OrdersAPI.Middleware
                 await _next(httpContext);
 
             }
+            catch (BrokenCircuitException ex)
+            {
+                httpContext.Response.StatusCode = 503;
+                await httpContext.Response.WriteAsJsonAsync(new
+                {
+                    Message = $"The service is currently unavailable. Please try again in 2 minutes."
+                });
+            }
             catch (Exception e)
             {
 
@@ -34,15 +43,17 @@ namespace OrdersAPI.Middleware
 
                 if (e.InnerException is not null)
                 {
-                    _logger.LogError(e.InnerException.Message);
+                    _logger.LogError($"{e.InnerException.Message}");
                 }
+
                 //Internal Server Error
                 httpContext.Response.StatusCode = 500;
                 await httpContext.Response.WriteAsJsonAsync(new
                 {
-                    Message = e.Message
+                    Message = $"{e.Message}"
                 });
             }
+          
         }
     }
 
