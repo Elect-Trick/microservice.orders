@@ -15,6 +15,7 @@ public static class DependencyInjection
 
         services.AddScoped<IValidator, OrderValidator>();
         services.AddSingleton<IUserMicroServicePolicies, UserMircoservicePollyPolicies>();
+        services.AddSingleton<IProductsMicroServicePolices, ProdcutsMicroservicePollyPolicies>();
         return services;
     }
 }

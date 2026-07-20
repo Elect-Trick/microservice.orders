@@ -16,15 +16,12 @@ builder.Services.AddHttpClient<UserMicroServiceClient>(client =>
     client.BaseAddress =
         new Uri(
             $"http://{Environment.GetEnvironmentVariable("UserMSName")}:{Environment.GetEnvironmentVariable("UserMSPort")}/");
-}).AddPolicyHandler((serviceProvicer, request) =>
-{
-    return serviceProvicer.GetRequiredService<IUserMicroServicePolicies>().GetAllPolcies();
-});
+}).AddPolicyHandler((serviceProvicer, request) => serviceProvicer.GetRequiredService<IUserMicroServicePolicies>().GetAllPolcies());
 
 builder.Services.AddHttpClient<ProductMicroServiceClient>(client =>
 {
     client.BaseAddress = new Uri($"http://{Environment.GetEnvironmentVariable("ProductsMSName")}:{Environment.GetEnvironmentVariable("ProductsMSPort")}/");
-});
+}).AddPolicyHandler((serviceProvicer, request) => serviceProvicer.GetRequiredService<IProductsMicroServicePolices>().GetFallBackPolicy());;
 
 
 builder.Services.AddBusinessLogicLayer();
