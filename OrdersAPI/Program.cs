@@ -21,7 +21,7 @@ builder.Services.AddHttpClient<UserMicroServiceClient>(client =>
 builder.Services.AddHttpClient<ProductMicroServiceClient>(client =>
 {
     client.BaseAddress = new Uri($"http://{Environment.GetEnvironmentVariable("ProductsMSName")}:{Environment.GetEnvironmentVariable("ProductsMSPort")}/");
-}).AddPolicyHandler((serviceProvicer, request) => serviceProvicer.GetRequiredService<IProductsMicroServicePolices>().GetFallBackPolicy());;
+}).AddPolicyHandler((serviceProvicer, request) => serviceProvicer.GetRequiredService<IProductsMicroServicePolices>().GetAllPolicies());
 
 
 builder.Services.AddBusinessLogicLayer();

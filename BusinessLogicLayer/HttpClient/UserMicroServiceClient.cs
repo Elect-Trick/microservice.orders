@@ -21,6 +21,8 @@ public class UserMicroServiceClient
          * Or just return detailed info to the user.
          */
         
+        await Task.Delay(10000);
+        
         HttpResponseMessage response = await _httpClient.GetAsync($"api/user/{id}");
         if (!response.IsSuccessStatusCode)
         {

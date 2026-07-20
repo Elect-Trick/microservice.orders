@@ -5,6 +5,7 @@ using BusinessLogicLayer.PollyContracts;
 using DataAccessLayer.DTOs;
 using Microsoft.Extensions.Logging;
 using Polly;
+using Polly.Bulkhead;
 using Polly.Fallback;
 
 namespace BusinessLogicLayer.Policies;
@@ -12,9 +13,15 @@ namespace BusinessLogicLayer.Policies;
 public class ProdcutsMicroservicePollyPolicies: IProductsMicroServicePolices
 {
     private readonly ILogger<ProdcutsMicroservicePollyPolicies> _logger;
+    private IAsyncPolicy<HttpResponseMessage> _combinedPolicies;
+
     public ProdcutsMicroservicePollyPolicies(ILogger<ProdcutsMicroservicePollyPolicies> logger)
     {
         _logger = logger;
+        _combinedPolicies = Policy.WrapAsync(
+            GetFallBackPolicy(),
+            GetBulkheadIsolationPolicy()
+        );
     }
 
     public IAsyncPolicy<HttpResponseMessage> GetFallBackPolicy()
@@ -37,6 +44,23 @@ public class ProdcutsMicroservicePollyPolicies: IProductsMicroServicePolices
             });
         return policy;
     }
+
+    public IAsyncPolicy<HttpResponseMessage> GetBulkheadIsolationPolicy()
+    {
+        AsyncBulkheadPolicy<HttpResponseMessage> policy = Policy.BulkheadAsync<HttpResponseMessage>(2, maxQueuingActions:40, onBulkheadRejectedAsync:
+            (context) =>
+            {
+                _logger.LogInformation($"Bulkhead has been triggered, Cant serve more requests");
+                return Task.CompletedTask;
+            });
+        return policy;
+    }
+
+    public IAsyncPolicy<HttpResponseMessage> GetAllPolicies()
+    {
+        return _combinedPolicies;
+    }
+
     public string PolicyKey { get; }
     public IAsyncPolicy<HttpResponseMessage> WithPolicyKey(string policyKey)
     {

@@ -4,6 +4,7 @@ using Polly;
 using Polly.Retry;
 using Microsoft.Extensions.Logging;
 using Polly.CircuitBreaker;
+using Polly.Timeout;
 
 namespace BusinessLogicLayer.Policies;
 
@@ -17,7 +18,8 @@ public class UserMircoservicePollyPolicies : IUserMicroServicePolicies
         _logger = logger;
            _combinedPolicy = Policy.WrapAsync(
             GetCircuitBreakerPolicy(),
-            GetRetryPolicy()
+            GetRetryPolicy(),
+            GetTimeoutPolicy()
         );
     }
     public IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
@@ -37,7 +39,7 @@ public class UserMircoservicePollyPolicies : IUserMicroServicePolicies
     {
          AsyncCircuitBreakerPolicy<HttpResponseMessage> policy = Policy.HandleResult<HttpResponseMessage>(response => !response.IsSuccessStatusCode
         ).CircuitBreakerAsync(handledEventsAllowedBeforeBreaking: 1,
-                                durationOfBreak:  TimeSpan.FromMinutes(1),
+                                durationOfBreak:  TimeSpan.FromSeconds(3),
                                 onBreak:
             (outcome, timeSpan) =>
             {
@@ -57,6 +59,11 @@ public class UserMircoservicePollyPolicies : IUserMicroServicePolicies
          return policy;
     }
 
+    public IAsyncPolicy<HttpResponseMessage> GetTimeoutPolicy()
+    {
+        AsyncTimeoutPolicy<HttpResponseMessage> policy = Policy.TimeoutAsync<HttpResponseMessage>(TimeSpan.FromSeconds(5));
+        return policy;
+    }
 
 
     public string PolicyKey { get; }
