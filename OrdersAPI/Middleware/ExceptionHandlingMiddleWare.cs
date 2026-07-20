@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using Polly.Bulkhead;
 using Polly.CircuitBreaker;
+using Polly.Timeout;
 
 namespace OrdersAPI.Middleware
 {
@@ -33,6 +35,22 @@ namespace OrdersAPI.Middleware
                 await httpContext.Response.WriteAsJsonAsync(new
                 {
                     Message = $"The service is currently unavailable. Please try again in 2 minutes."
+                });
+            }
+            catch (TimeoutRejectedException ex)
+            {
+                httpContext.Response.StatusCode = 504;
+                await httpContext.Response.WriteAsJsonAsync(new
+                {
+                    Message = $"The request timed out. Please try again in a few seconds."
+                });
+            }
+            catch (BulkheadRejectedException ex)
+            {
+                httpContext.Response.StatusCode = 504;
+                await httpContext.Response.WriteAsJsonAsync(new
+                {
+                    Message = $"Bulkhead is currently overloaded. Please try again later."
                 });
             }
             catch (Exception e)
