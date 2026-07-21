@@ -1,16 +1,19 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 using DataAccessLayer.DTOs;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace BusinessLogicLayer.HttpClient;
 using System.Net.Http;
 public class UserMicroServiceClient
 {
     private readonly HttpClient _httpClient;
-
-    public UserMicroServiceClient(HttpClient httpClient)
+    private readonly IDistributedCache _distributedCache;
+    public UserMicroServiceClient(HttpClient httpClient,IDistributedCache distributedCache)
     {
         _httpClient = httpClient;
+        _distributedCache = distributedCache;
     }
 
     public async Task<UserDTO?> GetUserByUserID(Guid id)
@@ -21,7 +24,12 @@ public class UserMicroServiceClient
          * Or just return detailed info to the user.
          */
         
-        await Task.Delay(10000);
+        string cacheKey = $"user:{id}";  
+        string? cachedProduct =  await _distributedCache.GetStringAsync(cacheKey);
+        if (cachedProduct != null)
+        {
+            return JsonSerializer.Deserialize<UserDTO>(cachedProduct);
+        }
         
         HttpResponseMessage response = await _httpClient.GetAsync($"api/user/{id}");
         if (!response.IsSuccessStatusCode)
@@ -45,6 +53,10 @@ public class UserMicroServiceClient
             throw new ArgumentNullException("Invalid user ID");
             
         }
+        
+        string cacheValue = JsonSerializer.Serialize(user);
+        DistributedCacheEntryOptions options = new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(30)).SetSlidingExpiration(TimeSpan.FromSeconds(10));    
+        await _distributedCache.SetStringAsync(cacheKey, cacheValue, options);
             
         return user;
 
