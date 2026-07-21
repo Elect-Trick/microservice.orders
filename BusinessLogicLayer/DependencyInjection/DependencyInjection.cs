@@ -16,6 +16,10 @@ public static class DependencyInjection
         services.AddScoped<IValidator, OrderValidator>();
         services.AddSingleton<IUserMicroServicePolicies, UserMircoservicePollyPolicies>();
         services.AddSingleton<IProductsMicroServicePolices, ProdcutsMicroservicePollyPolicies>();
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = $"{Environment.GetEnvironmentVariable("REDIS_HOST")}:{Environment.GetEnvironmentVariable("REDIS_PORT")}";
+        });
         return services;
     }
 }
