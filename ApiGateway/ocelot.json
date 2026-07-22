@@ -1,0 +1,46 @@
+{
+  "Routes":
+  [
+    {"_comment": "This is the route for the Users BE",
+      "UpstreamPathTemplate": "/gateway/Auth/{everything}",
+      "DownstreamPathTemplate": "/api/Auth/{everything}",
+      "DownstreamHostAndPorts" : [
+        {
+          "Host": "usersBE",
+          "Port": 5000
+        }
+      ],
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ],
+      "UpstreamScheme": "http"
+    },
+    
+    { "_comment" : "This is the route for the Orders BE",
+      "UpstreamPathTemplate": "/gateway/Orders/{everything}",
+      "DownstreamPathTemplate": "/api/Orders/{everything}",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "ordersBE",
+          "Port": 7000
+        }
+      ],
+      "UpstreamHttpMethod": [ "GET", "POST", "OPTIONS" ],
+      "DownstreamScheme": "http"
+    
+  },
+    {
+      "_comment": "This is the route for the Products BE",
+      "UpstreamPathTemplate": "/gateway/Products/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ],
+      "DownstreamPathTemplate": "/api/Products/{everything}",
+      "DownstreamHostAndPorts" : [
+        {"Host": "productsBE",
+        "Port": 8080
+        }
+      ],
+      "DownstreamScheme": "http"
+    }],
+  
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:5050"
+  }
+}
